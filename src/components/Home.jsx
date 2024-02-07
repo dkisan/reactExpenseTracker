@@ -1,27 +1,31 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ExpenseForm from "./ExpenseForm";
-import ExpenseShow from "./ExpenseShow";
+import { useDispatch, useSelector } from "react-redux";
+import { expenseactions } from "../store/expenseslice";
+import { authactions } from "../store/authslice";
 
 const Home = () => {
     const [isverify, setIsverify] = useState(false)
-    const [exp, setExp] = useState([])
+
+    const dispatch = useDispatch()
+    const userInfo = useSelector(state => state.auth)
 
     const navigate = useNavigate()
 
-    const getExp = ()=>{
+
+    const getExp = () => {
         fetch('https://reactcrud-51072-default-rtdb.firebaseio.com//expense.json')
             .then(async res => {
                 if (res.ok) {
                     const data = await res.json()
-                    console.log(data)
-                    if(data){
+                    if (data) {
                         const obj = []
-                        Object.entries(data).map(d=>{
+                        Object.entries(data).map(d => {
                             d[1].name = d[0]
                             obj.push(d[1])
                         })
-                        setExp(obj)
+                        dispatch(expenseactions.addExpense(obj))
                     }
                 } else {
                     return res.json().then(data => {
@@ -35,10 +39,10 @@ const Home = () => {
     }
 
     useEffect(() => {
-        if(localStorage.getItem('ExpenseUToken')){
+        if (userInfo.isLogin) {
             getUser();
             getExp();
-        }else{
+        } else {
             navigate('/login')
         }
     }, [])
@@ -48,7 +52,8 @@ const Home = () => {
         fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAY6PIq34nDju030WEkLJCKVdKmx_39C68', {
             method: 'POST',
             body: JSON.stringify({
-                idToken: localStorage.getItem('ExpenseUToken'),
+                // idToken: localStorage.getItem('ExpenseUToken'),
+                idToken: userInfo.idToken,
             }),
             headers: {
                 'Content-Type': 'application/json'
@@ -82,7 +87,8 @@ const Home = () => {
         fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyAY6PIq34nDju030WEkLJCKVdKmx_39C68', {
             method: 'POST',
             body: JSON.stringify({
-                idToken: localStorage.getItem('ExpenseUToken'),
+                // idToken: localStorage.getItem('ExpenseUToken'),
+                idToken: userInfo.idToken,
                 requestType: "VERIFY_EMAIL"
             }),
             headers: {
@@ -107,6 +113,7 @@ const Home = () => {
     }
 
     const logoutHandler = () => {
+        dispatch(authactions.logout())
         localStorage.removeItem('ExpenseUToken')
         navigate('/login')
     }
@@ -123,7 +130,7 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-            <ExpenseForm exp={exp} setExp={setExp}/>
+            <ExpenseForm />
             {/* <ExpenseShow exp={exp} setExp={setExp}/> */}
         </div>
     )

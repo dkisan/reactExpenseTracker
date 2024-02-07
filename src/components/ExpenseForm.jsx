@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 import ExpenseShow from "./ExpenseShow";
+import { useDispatch, useSelector } from "react-redux";
+import { expenseactions } from "../store/expenseslice";
 
 const ExpenseForm = (props) => {
 
@@ -8,10 +10,13 @@ const ExpenseForm = (props) => {
     const catRef = useRef()
 
     const [update, setUpdate] = useState({ status: false, id: '' })
+    const expense = useSelector(state=>state.expense.expenses)
+
+    const dispatch = useDispatch()
 
     const editHandler = (event) => {
         const id = event.target.parentElement.getAttribute('id')
-        const data = props.exp.filter(e => e.name === id)
+        const data = expense.filter(e => e.name === id)
 
         amountRef.current.value = data[0].amount
         descRef.current.value = data[0].description
@@ -43,10 +48,10 @@ const ExpenseForm = (props) => {
                         const data = await res.json()
                         // console.log(data)
                         if (data.name) {
-                            const exps = [...props.exp]
+                            const exps = [...expense]
                             obj.name = data.name
                             exps.push(obj)
-                            props.setExp(exps)
+                            dispatch(expenseactions.addExpense(exps))
                         }
                     } else {
                         return res.json().then(data => {
@@ -67,10 +72,10 @@ const ExpenseForm = (props) => {
                 },
             })
                 .then(async res => {
-                    const exps = [...props.exp]
+                    const exps = [...expense]
                     const expIdx = exps.findIndex(p => p.name === update.id)
                     exps[expIdx] = obj
-                    props.setExp(exps)
+                    dispatch(expenseactions.addExpense(exps))
                     setUpdate({ status: false, id: '' })
                     amountRef.current.value = ''
                     descRef.current.value = ''
@@ -99,7 +104,7 @@ const ExpenseForm = (props) => {
                     <button onClick={expHandler} className="border border-blue-500 bg-blue-500 text-white w-max p-1 rounded-md">{update.status ? 'Update Expense' : 'Add Expense'}</button>
                 </form>
             </div>
-            <ExpenseShow exp={props.exp} setExp={props.setExp} editHandler={editHandler} />
+            <ExpenseShow editHandler={editHandler} />
         </div>
 
     )

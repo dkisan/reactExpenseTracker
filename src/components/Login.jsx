@@ -1,11 +1,14 @@
 import { useRef } from "react"
+import { useDispatch } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
+import { authactions } from "../store/authslice"
 
 const Login = () => {
     const emailRef = useRef('')
     const passRef = useRef('')
 
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const loginHandler = (event) => {
         event.preventDefault()
@@ -30,6 +33,7 @@ const Login = () => {
                 if (res.ok) {
                     const data = await res.json()
                     // console.log(data)
+                    dispatch(authactions.setUserdata(data.idToken))
                     localStorage.setItem('ExpenseUToken',data.idToken)
                     navigate('/')
                 } else {
