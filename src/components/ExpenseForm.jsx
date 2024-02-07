@@ -6,7 +6,6 @@ const ExpenseForm = (props) => {
     const descRef = useRef()
     const catRef = useRef()
 
-    const [exp, setExp] = useState([])
 
     const expHandler = (event) => {
         event.preventDefault()
@@ -16,9 +15,36 @@ const ExpenseForm = (props) => {
             description: descRef.current.value,
             category: catRef.current.value
         }
-        const exps = [...props.exp]
-        exps.push(obj)
-        props.setExp(exps)
+
+        fetch('https://reactcrud-51072-default-rtdb.firebaseio.com//expense.json', {
+            method: 'POST',
+            body: JSON.stringify(obj),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(async res => {
+                if (res.ok) {
+                    const data = await res.json()
+                    // console.log(data)
+                    if (data.name) {
+                        const exps = [...props.exp]
+                        obj.name = data.name
+                        exps.push(obj)
+                        props.setExp(exps)
+                    }
+                } else {
+                    return res.json().then(data => {
+                        alert(data.error.message)
+                    })
+                }
+            })
+            .catch(err => {
+                console.log(err.message)
+            })
+
+
+
     }
 
     return (
@@ -32,7 +58,7 @@ const ExpenseForm = (props) => {
                     <option value="Salary">Salary</option>
                 </select>
                 <button onClick={expHandler} className="border border-blue-500 bg-blue-500 text-white w-max p-1 rounded-md">Add Expense</button>
-            </form>            
+            </form>
         </div>
 
     )
