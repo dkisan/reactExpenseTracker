@@ -1,10 +1,12 @@
 import { useDispatch, useSelector } from "react-redux"
 import { expenseactions } from "../store/expenseslice"
+import { themeactions } from "../store/themeslice"
 
 const ExpenseShow = (props) => {
 
     const expense = useSelector(state => state.expense.expenses)
     const totalamount = useSelector(state => state.expense.totalamount)
+    const isPremium = useSelector(state => state.theme.active)
     const dispatch = useDispatch()
 
     const deleteHandler = (event) => {
@@ -27,6 +29,20 @@ const ExpenseShow = (props) => {
             })
     }
 
+    const activePremiumHandler = ()=>{
+        dispatch(themeactions.activatePremium())
+    }
+
+    const downloadHandler = ()=>{
+        const txt = JSON.stringify(expense)
+        let data = new Blob([txt],{type:'text/csv'})
+        const url = window.URL.createObjectURL(data)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'expense.txt'
+        a.click()
+    }
+
     return (
         <div className="flex flex-col items-center mt-5">
             <h1><u>Expenses</u></h1>
@@ -39,8 +55,11 @@ const ExpenseShow = (props) => {
                 })}
             </ul>
 
-            {totalamount > 10000 && 
-                <button className="border-blue-500 text-white bg-blue-500 p-2 rounded-md mx-2 my-1">Active Premium</button>
+            {!isPremium && totalamount > 10000 && 
+                <button onClick={activePremiumHandler} className="border-blue-500 text-white bg-blue-500 p-2 rounded-md mx-2 my-1">Active Premium</button>
+            }
+            {isPremium && totalamount > 10000 && 
+                <button onClick={downloadHandler} className="border-blue-500 text-white bg-blue-500 p-2 rounded-md mx-2 my-1">Download Expenses</button>
             }
         </div>
 

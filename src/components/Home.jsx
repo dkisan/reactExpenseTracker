@@ -4,12 +4,15 @@ import ExpenseForm from "./ExpenseForm";
 import { useDispatch, useSelector } from "react-redux";
 import { expenseactions } from "../store/expenseslice";
 import { authactions } from "../store/authslice";
+import { themeactions } from "../store/themeslice";
 
 const Home = () => {
     const [isverify, setIsverify] = useState(false)
 
     const dispatch = useDispatch()
     const userInfo = useSelector(state => state.auth)
+    const theme = useSelector(state => state.theme.theme)
+    const active = useSelector(state => state.theme.active)
 
     const navigate = useNavigate()
 
@@ -118,8 +121,12 @@ const Home = () => {
         navigate('/login')
     }
 
+    const themeHandler = () => {
+        dispatch(themeactions.addpremium())
+    }
+
     return (
-        <div>
+        <div className={theme === 'light' ? 'bg-white w-full  min-h-[100vh]' : 'bg-black text-white w-full min-h-[100vh]'}>
             <div className="w-full h-max p-4 border border-b-orange-400 flex justify-between items-center">
                 <h1 className="italic font-bold text-xl">Welcome to Expense Tracker</h1>
                 <div className="flex flex-col gap-2 items-center">
@@ -127,6 +134,7 @@ const Home = () => {
                     <div className="flex gap-4">
                         {!isverify && <button onClick={veryfyEmailHandler} className="border border-red-500 text-red-500 w-max p-1 rounded-md">Verify Email</button>}
                         <button onClick={logoutHandler} className="border border-red-500 bg-red-500 text-white w-max p-1 rounded-md">Logout</button>
+                        {active && <button className={theme === 'light' ? 'bg-black text-white p-2 rounded-md' : 'rounded-md bg-white text-orange-500 p-2'} onClick={themeHandler}>{theme === 'light' ? 'Dark' : 'Light'}</button>}
                     </div>
                 </div>
             </div>

@@ -10,7 +10,7 @@ const ExpenseForm = (props) => {
     const catRef = useRef()
 
     const [update, setUpdate] = useState({ status: false, id: '' })
-    const expense = useSelector(state=>state.expense.expenses)
+    const expense = useSelector(state => state.expense.expenses)
 
     const dispatch = useDispatch()
 
@@ -94,9 +94,9 @@ const ExpenseForm = (props) => {
         <div>
             <div className="flex justify-center mt-5">
                 <form action="" className="w-1/2 border-b-2 p-4">
-                    <input ref={amountRef} type="number" name="" placeholder="Enter Amount" id="" />
-                    <input ref={descRef} type="text" name="" placeholder="Enter Description" id="" />
-                    <select ref={catRef} name="" id="">
+                    <input className='text-black' ref={amountRef} type="number" name="" placeholder="Enter Amount" id="" />
+                    <input className='text-black' ref={descRef} type="text" name="" placeholder="Enter Description" id="" />
+                    <select className='text-black' ref={catRef} name="" id="">
                         <option value="Food">Food</option>
                         <option value="Petrol">Petrol</option>
                         <option value="Salary">Salary</option>
