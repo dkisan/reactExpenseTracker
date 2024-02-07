@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import ExpenseForm from "./ExpenseForm";
+import ExpenseShow from "./ExpenseShow";
 
 const Home = () => {
     const [isverify, setIsverify] = useState(false)
+    const [exp, setExp] = useState([])
+
     const navigate = useNavigate()
 
     useEffect(() => {
-        getUser();
+        if(localStorage.getItem('ExpenseUToken')){
+            getUser();
+        }else{
+            navigate('/login')
+        }
     }, [])
 
     const getUser = () => {
@@ -88,6 +96,8 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+            <ExpenseForm exp={exp} setExp={setExp}/>
+            <ExpenseShow exp={exp}/>
         </div>
     )
 }
