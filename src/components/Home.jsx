@@ -14,6 +14,7 @@ const Home = () => {
             .then(async res => {
                 if (res.ok) {
                     const data = await res.json()
+                    console.log(data)
                     if(data){
                         const obj = []
                         Object.entries(data).map(d=>{
@@ -41,6 +42,7 @@ const Home = () => {
             navigate('/login')
         }
     }, [])
+
 
     const getUser = () => {
         fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAY6PIq34nDju030WEkLJCKVdKmx_39C68', {
@@ -122,7 +124,7 @@ const Home = () => {
                 </div>
             </div>
             <ExpenseForm exp={exp} setExp={setExp}/>
-            <ExpenseShow exp={exp}/>
+            {/* <ExpenseShow exp={exp} setExp={setExp}/> */}
         </div>
     )
 }
