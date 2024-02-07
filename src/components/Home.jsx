@@ -9,9 +9,34 @@ const Home = () => {
 
     const navigate = useNavigate()
 
+    const getExp = ()=>{
+        fetch('https://reactcrud-51072-default-rtdb.firebaseio.com//expense.json')
+            .then(async res => {
+                if (res.ok) {
+                    const data = await res.json()
+                    if(data){
+                        const obj = []
+                        Object.entries(data).map(d=>{
+                            d[1].name = d[0]
+                            obj.push(d[1])
+                        })
+                        setExp(obj)
+                    }
+                } else {
+                    return res.json().then(data => {
+                        alert(data.error.message)
+                    })
+                }
+            })
+            .catch(err => {
+                console.log(err.message)
+            })
+    }
+
     useEffect(() => {
         if(localStorage.getItem('ExpenseUToken')){
             getUser();
+            getExp();
         }else{
             navigate('/login')
         }
