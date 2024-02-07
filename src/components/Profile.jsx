@@ -1,13 +1,15 @@
 import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Profile = () => {
 
     const nameRef = useRef('')
     const imageRef = useRef('')
 
-    useEffect(()=>{
-        
+    const navigate = useNavigate()
+
+    useEffect(() => {
+
         fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAY6PIq34nDju030WEkLJCKVdKmx_39C68', {
             method: 'POST',
             body: JSON.stringify({
@@ -21,8 +23,8 @@ const Profile = () => {
                 if (res.ok) {
                     const data = await res.json()
                     // console.log(data)
-                    if(data.users){
-                        nameRef.current.value = data.users[0].displayName 
+                    if (data.users) {
+                        nameRef.current.value = data.users[0].displayName
                         imageRef.current.value = data.users[0].photoUrl
                     }
 
@@ -36,7 +38,7 @@ const Profile = () => {
                 console.log(err.message)
             })
 
-    },[])
+    }, [])
 
     const profileHandler = (event) => {
         event.preventDefault()
@@ -86,7 +88,7 @@ const Profile = () => {
             <div className="w-3/4 m-auto mt-4 font-bold text-lg">
                 <div className="flex justify-between mb-4">
                     <h1>Contact details</h1>
-                    <button className="bg-transparent text-orange-600 border border-orange-600 p-1 rounded-md">Cancel</button>
+                    <button onClick={() => navigate('/')} className="bg-transparent text-orange-600 border border-orange-600 p-1 rounded-md">Cancel</button>
                 </div>
                 <form action="" className="flex flex-col gap-8" onSubmit={profileHandler}>
                     <div className="flex justify-evenly">
