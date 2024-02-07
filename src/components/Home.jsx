@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
-
     const [isverify, setIsverify] = useState(false)
+    const navigate = useNavigate()
+
     useEffect(() => {
         getUser();
     }, [])
@@ -21,7 +22,7 @@ const Home = () => {
             .then(async res => {
                 if (res.ok) {
                     const data = await res.json()
-                    if(data.users){
+                    if (data.users) {
                         if (data.users[0].emailVerified) {
                             setIsverify(true)
                         }
@@ -70,13 +71,21 @@ const Home = () => {
 
     }
 
+    const logoutHandler = () => {
+        localStorage.removeItem('ExpenseUToken')
+        navigate('/login')
+    }
+
     return (
         <div>
             <div className="w-full h-max p-4 border border-b-orange-400 flex justify-between items-center">
                 <h1 className="italic font-bold text-xl">Welcome to Expense Tracker</h1>
                 <div className="flex flex-col gap-2 items-center">
                     <p className="bg-gray-200 p-2 rounded-full w-max">Your Profile is Incomplete. <Link to='/profile' className="text-blue-700 font-semiboldold">Complete Now</Link></p>
-                    {!isverify && <button onClick={veryfyEmailHandler} className="border border-red-500 text-red-500 w-max p-1 rounded-md">Verify Email</button>}
+                    <div className="flex gap-4">
+                        {!isverify && <button onClick={veryfyEmailHandler} className="border border-red-500 text-red-500 w-max p-1 rounded-md">Verify Email</button>}
+                        <button onClick={logoutHandler} className="border border-red-500 bg-red-500 text-white w-max p-1 rounded-md">Logout</button>
+                    </div>
                 </div>
             </div>
         </div>
