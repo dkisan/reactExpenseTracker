@@ -1,42 +1,51 @@
 import { useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
 const Profile = () => {
 
     const nameRef = useRef('')
     const imageRef = useRef('')
+    const userInfo = useSelector(state => state.auth)
+
 
     const navigate = useNavigate()
 
+
     useEffect(() => {
+        if (!userInfo.isLogin) {
+            navigate('/login')
+        } else {
 
-        fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAY6PIq34nDju030WEkLJCKVdKmx_39C68', {
-            method: 'POST',
-            body: JSON.stringify({
-                idToken: localStorage.getItem('ExpenseUToken')
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(async res => {
-                if (res.ok) {
-                    const data = await res.json()
-                    // console.log(data)
-                    if (data.users) {
-                        nameRef.current.value = data.users[0].displayName
-                        imageRef.current.value = data.users[0].photoUrl
-                    }
 
-                } else {
-                    return res.json().then(data => {
-                        alert(data.error.message)
-                    })
+            fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAY6PIq34nDju030WEkLJCKVdKmx_39C68', {
+                method: 'POST',
+                body: JSON.stringify({
+                    idToken: localStorage.getItem('ExpenseUToken')
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
                 }
             })
-            .catch(err => {
-                console.log(err.message)
-            })
+                .then(async res => {
+                    if (res.ok) {
+                        const data = await res.json()
+                        // console.log(data)
+                        if (data.users) {
+                            nameRef.current.value = data.users[0].displayName ? data.users[0].displayName : ''
+                            imageRef.current.value = data.users[0].photoUrl ? data.users[0].photoUrl : ''
+                        }
+
+                    } else {
+                        return res.json().then(data => {
+                            alert(data.error.message)
+                        })
+                    }
+                })
+                .catch(err => {
+                    console.log(err.message)
+                })
+        }
 
     }, [])
 

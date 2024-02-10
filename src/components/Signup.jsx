@@ -1,12 +1,14 @@
 import { useRef } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 const Signup = () => {
     const emailRef = useRef('')
     const passRef = useRef('')
     const cnfpassRef = useRef('')
 
-    const signupHandler = (event) => {
+    const navigate = useNavigate()
+
+    const signupHandler = async (event) => {
         event.preventDefault()
         if (emailRef.current.value === '' || passRef.current.value === '' || cnfpassRef.current.value === '') {
             alert('Please fill all fields')
@@ -17,34 +19,26 @@ const Signup = () => {
             return
         }
 
-
-        fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAY6PIq34nDju030WEkLJCKVdKmx_39C68', {
-            method: 'POST',
-            body: JSON.stringify({
-                email: emailRef.current.value,
-                password: passRef.current.value,
-                returnSecureToken: true
-            }),
-            headers: {
-                'Content-Type': 'application/json'
+        try {
+            const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAY6PIq34nDju030WEkLJCKVdKmx_39C68', {
+                method: 'POST',
+                body: JSON.stringify({
+                    email: emailRef.current.value,
+                    password: passRef.current.value,
+                    returnSecureToken: true
+                })
+            })
+            if (response.ok) {
+                console.log('User Successfully Signup')
+                navigate('/login')
+            } else {
+                const data = await response.json()
+                throw data.error
             }
-        })
-            .then(async res => {
-                if (res.ok) {
-                    // const data = await res.json()
-                    // console.log(data)
-                    console.log('User Successfully Signup')
-                } else {
-                    return res.json().then(data => {
-                        alert(data.error.message)
-                    })
-                }
-            })
-            .catch(err => {
-                console.log(err.message)
-            })
-
-
+        }
+        catch (err) {
+            alert(err.message)
+        }
     }
 
     return (

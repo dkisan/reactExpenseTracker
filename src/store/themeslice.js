@@ -2,13 +2,16 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const themeslice = createSlice({
     name: 'theme',
-    initialState: { theme: 'light', active: false },
+    initialState: { theme: 'Light', active: false },
     reducers: {
-        addpremium: (state) => {
-            state.theme = state.theme === 'light' ? 'dark' : 'light'
+        addpremium: (state,action) => {
+            state.theme = action.payload
         },
         activatePremium: (state) => {
             state.active = true
+        },
+        deactivatePremium: (state) => {
+            state.active = false
         }
     }
 })

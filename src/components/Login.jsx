@@ -10,42 +10,44 @@ const Login = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const loginHandler = (event) => {
+    const loginHandler = async (event) => {
         event.preventDefault()
-        if (emailRef.current.value === '' || passRef.current.value === '' ) {
+        if (emailRef.current.value === '' || passRef.current.value === '') {
             alert('Please fill all fields')
             return
         }
 
-
-        fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAY6PIq34nDju030WEkLJCKVdKmx_39C68', {
-            method: 'POST',
-            body: JSON.stringify({
-                email: emailRef.current.value,
-                password: passRef.current.value,
-                returnSecureToken: true
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(async res => {
-                if (res.ok) {
-                    const data = await res.json()
-                    // console.log(data)
-                    dispatch(authactions.setUserdata(data.idToken))
-                    localStorage.setItem('ExpenseUToken',data.idToken)
-                    navigate('/')
-                } else {
-                    return res.json().then(data => {
-                        alert(data.error.message)
-                    })
+        try {
+            const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAY6PIq34nDju030WEkLJCKVdKmx_39C68', {
+                method: 'POST',
+                body: JSON.stringify({
+                    email: emailRef.current.value,
+                    password: passRef.current.value,
+                    returnSecureToken: true
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
                 }
             })
-            .catch(err => {
-                console.log(err.message)
-            })
+            if (response.ok) {
+                const data = await response.json()
+                const email = data.email.split('@')[0]
+                dispatch(authactions.setUserdata({
+                    idToken: data.idToken,
+                    email: email
+                }))
+                localStorage.setItem('ExpenseUToken', data.idToken)
+                localStorage.setItem('ExpenseUEmail', email)
+                navigate('/')
+            } else {
+                const data = await response.json()
+                throw data.error
+            }
 
+        }
+        catch (err) {
+            alert(err.message)
+        }
 
     }
 
